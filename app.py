@@ -56,7 +56,6 @@ def check_token(token):
         del TOKENS[token]
         return None
     return token_data['user_id']
-
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
@@ -247,6 +246,14 @@ HTML_TEMPLATE = '''
                 return;
             }
             
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                showMsg('❌ 验证失败，请重新获取链接', 'error');
+                return;
+            }
+            
             const formData = new FormData();
             formData.append('image', selectedFile);
             
@@ -255,7 +262,7 @@ HTML_TEMPLATE = '''
             document.getElementById('message').style.display = 'none';
             
             try {
-                const res = await fetch('/upload', { method: 'POST', body: formData });
+                const res = await fetch('/upload?token=' + token, { method: 'POST', body: formData });
                 const data = await res.json();
                 
                 if (data.success) {
